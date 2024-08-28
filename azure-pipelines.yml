@@ -17,7 +17,13 @@ steps:
     targetType: 'inline'
     script: |
       $vmPrivateIps = @('10.0.0.4', '10.0.0.5', '10.0.0.6')
-      $credential = Get-Credential # You will be prompted for credentials to access the VMs
+      # Define the username and password
+      $username = "azureadmin"
+      $password = ConvertTo-SecureString "azure@12345" -AsPlainText -Force
+
+      # Create a PSCredential object
+      $credential = New-Object System.Management.Automation.PSCredential($username, $password)
+
       
       foreach ($ip in $vmPrivateIps) {
           Invoke-Command -ComputerName $ip -Credential $credential -ScriptBlock {
