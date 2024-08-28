@@ -7,7 +7,9 @@ trigger:
 - main
 
 pool:
-  name: Default
+  name: Default  # Replace this with the actual pool name where your agent is registered
+  demands:
+  - Agent.Name -equals WINUSWTST03
 
 steps:
 - task: PowerShell@2
