@@ -7,13 +7,20 @@ trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  name: Default
+  demands: WINUSWSH03
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
-
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: |
+      $vmPrivateIps = @('10.0.0.4', '10.0.0.5', '10.0.0.6')
+      $credential = Get-Credential # You will be prompted for credentials to access the VMs
+      
+      foreach ($ip in $vmPrivateIps) {
+          Invoke-Command -ComputerName $ip -Credential $credential -ScriptBlock {
+              Restart-Service -Name "wuauserv" -Force
+              Write-Host "Restarted Windows Update Service on $env:COMPUTERNAME"
+          } -ErrorAction Stop
+      }
