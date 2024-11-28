@@ -12,6 +12,8 @@ pool:
   - Agent.Name -equals WINUSWSH03
 
 steps:
+- checkout: self
+  fetchDepth: 0
 - task: PowerShell@2
   inputs:
     targetType: 'inline'
@@ -31,3 +33,16 @@ steps:
               Write-Host "Restarted Windows Update Service on $env:COMPUTERNAME"
           } -ErrorAction Stop
       }
+- task: SonarCloudPrepare@3
+  inputs:
+    SonarQube: 'tf-sonarcloud-svc'
+    organization: 'abhijeetv2712'
+    scannerMode: 'cli'
+    configMode: 'manual'
+    cliProjectKey: 'abhijeetv2712_Terraform-POC'
+    cliProjectName: 'Terraform-POC'
+    cliSources: '.'
+- task: SonarCloudAnalyze@3
+- task: SonarCloudPublish@3
+  inputs:
+    pollingTimeoutSec: '300'
